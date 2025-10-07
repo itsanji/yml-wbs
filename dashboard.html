@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip.com Crawler - Project Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: #e2e8f0;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            background: white;
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+
+        .task-item:hover {
+            background: #f8fafc;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .status-complete { background: #10b981; }
+        .status-partial { background: #f59e0b; }
+        .status-not-started { background: #ef4444; }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-id {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-meta {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .task-hours {
+            text-align: right;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .priority-high { border-left: 4px solid #ef4444; }
+        .priority-medium { border-left: 4px solid #f59e0b; }
+        .priority-low { border-left: 4px solid #10b981; }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .team-member:last-child {
+            border-bottom: none;
+        }
+
+        .member-info h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .member-role {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .member-status {
+            text-align: right;
+        }
+
+        .status-available {
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .risk-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            border-left: 4px solid #ef4444;
+        }
+
+        .risk-item:last-child {
+            border-bottom: none;
+        }
+
+        .risk-name {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .risk-meta {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #f1f5f9;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🕷️ Trip.com Crawler Dashboard</h1>
+        <p>Project Management & Task Tracking</p>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            Loading project data...
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            Error loading tasks.json. Please make sure the file exists in the same directory.
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <!-- Project Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Project Progress</h3>
+                    <div class="value" id="completion-percentage">74%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 74%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Hours</h3>
+                    <div class="value" id="total-hours">192 / 260</div>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                        <span id="hours-remaining">68 hours remaining</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Tasks Complete</h3>
+                    <div class="value" id="tasks-complete">65 / 88</div>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                        <span id="tasks-remaining">23 tasks remaining</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Team Utilization</h3>
+                    <div class="value" id="team-utilization">0%</div>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                        <span id="available-members">4 members available</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard -->
+            <div class="dashboard-grid">
+                <div class="main-content">
+                    <div class="tabs">
+                        <div class="tab active" onclick="showTab('tasks')">Tasks</div>
+                        <div class="tab" onclick="showTab('sprint')">Current Sprint</div>
+                        <div class="tab" onclick="showTab('timeline')">Timeline</div>
+                    </div>
+
+                    <div id="tasks-tab" class="tab-content active">
+                        <input type="text" class="search-box" id="task-search" placeholder="Search tasks..." oninput="filterTasks()">
+                        
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" onclick="filterByStatus('all')">All</button>
+                            <button class="filter-btn" onclick="filterByStatus('not_started')">Not Started</button>
+                            <button class="filter-btn" onclick="filterByStatus('partial')">In Progress</button>
+                            <button class="filter-btn" onclick="filterByStatus('complete')">Complete</button>
+                        </div>
+
+                        <div id="tasks-list">
+                            <!-- Tasks will be populated here -->
+                        </div>
+                    </div>
+
+                    <div id="sprint-tab" class="tab-content">
+                        <div class="card-header">
+                            <h3>Week of October 7-13, 2025</h3>
+                            <p>Capacity: <span id="sprint-capacity">40 hours</span> | Committed: <span id="sprint-committed">22 hours</span></p>
+                        </div>
+                        <div id="sprint-tasks">
+                            <!-- Sprint tasks will be populated here -->
+                        </div>
+                    </div>
+
+                    <div id="timeline-tab" class="tab-content">
+                        <div id="timeline-view">
+                            <!-- Timeline will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <!-- Team Status -->
+                    <div class="card">
+                        <div class="card-header">
+                            👥 Team Status
+                        </div>
+                        <div id="team-list">
+                            <!-- Team members will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Risk Items -->
+                    <div class="card">
+                        <div class="card-header">
+                            ⚠️ Risk Items
+                        </div>
+                        <div id="risks-list">
+                            <!-- Risks will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            ⚡ Quick Actions
+                        </div>
+                        <div class="card-content">
+                            <button class="btn" style="width: 100%; margin-bottom: 0.5rem;" onclick="exportData()">
+                                📊 Export Report
+                            </button>
+                            <button class="btn" style="width: 100%; margin-bottom: 0.5rem;" onclick="refreshData()">
+                                🔄 Refresh Data
+                            </button>
+                            <button class="btn" style="width: 100%;" onclick="showAssignModal()">
+                                👤 Assign Task
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Assignment Modal -->
+    <div id="assign-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px;">
+            <h3 style="margin-bottom: 1rem;">Assign Task</h3>
+            <select id="task-select" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                <option value="">Select a task...</option>
+            </select>
+            <select id="member-select" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                <option value="">Select team member...</option>
+            </select>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn" onclick="assignTask()">Assign</button>
+                <button class="btn" style="background: #6b7280;" onclick="closeAssignModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectData = null;
+        let filteredTasks = [];
+        let currentFilter = 'all';
+
+        // Load and initialize dashboard
+        async function loadData() {
+            try {
+                const response = await fetch('tasks.json');
+                if (!response.ok) throw new Error('Failed to load tasks.json');
+                
+                projectData = await response.json();
+                initializeDashboard();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function initializeDashboard() {
+            updateStats();
+            renderTasks();
+            renderTeam();
+            renderRisks();
+            renderSprint();
+            filteredTasks = projectData.tasks;
+        }
+
+        function updateStats() {
+            const completion = projectData.project.completion_percentage;
+            const totalPlanned = projectData.project.total_planned_hours;
+            const totalActual = projectData.project.total_actual_hours;
+            const tasksComplete = projectData.tasks.filter(t => t.status === 'complete').length;
+            const totalTasks = projectData.tasks.length;
+            
+            document.getElementById('completion-percentage').textContent = completion + '%';
+            document.getElementById('progress-fill').style.width = completion + '%';
+            document.getElementById('total-hours').textContent = `${totalActual} / ${totalPlanned}`;
+            document.getElementById('hours-remaining').textContent = `${totalPlanned - totalActual} hours remaining`;
+            document.getElementById('tasks-complete').textContent = `${tasksComplete} / ${totalTasks}`;
+            document.getElementById('tasks-remaining').textContent = `${totalTasks - tasksComplete} tasks remaining`;
+            
+            const availableMembers = projectData.team.filter(m => m.availability === 'available').length;
+            document.getElementById('team-utilization').textContent = '0%';
+            document.getElementById('available-members').textContent = `${availableMembers} members available`;
+        }
+
+        function renderTasks() {
+            const tasksList = document.getElementById('tasks-list');
+            tasksList.innerHTML = '';
+
+            projectData.tasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item priority-${task.priority}`;
+                
+                const statusClass = task.status === 'complete' ? 'status-complete' : 
+                                  task.status === 'partial' ? 'status-partial' : 'status-not-started';
+                
+                taskItem.innerHTML = `
+                    <div class="task-status ${statusClass}"></div>
+                    <div class="task-info">
+                        <div class="task-id">${task.id}</div>
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-meta">
+                            ${task.assignee} • ${task.phase} • Due: ${task.due_date}
+                            ${task.notes ? `• ${task.notes}` : ''}
+                        </div>
+                    </div>
+                    <div class="task-hours">
+                        ${task.actual_hours}/${task.planned_hours}h
+                        <div style="font-size: 0.8rem; color: #6b7280;">
+                            ${task.hours_remaining}h left
+                        </div>
+                    </div>
+                `;
+                
+                tasksList.appendChild(taskItem);
+            });
+        }
+
+        function renderTeam() {
+            const teamList = document.getElementById('team-list');
+            teamList.innerHTML = '';
+
+            projectData.team.forEach(member => {
+                const memberDiv = document.createElement('div');
+                memberDiv.className = 'team-member';
+                
+                memberDiv.innerHTML = `
+                    <div class="member-info">
+                        <h4>${member.name}</h4>
+                        <div class="member-role">${member.role}</div>
+                    </div>
+                    <div class="member-status">
+                        <div class="status-available">${member.availability}</div>
+                        <div style="font-size: 0.8rem; color: #6b7280;">
+                            ${member.total_hours}h total
+                        </div>
+                    </div>
+                `;
+                
+                teamList.appendChild(memberDiv);
+            });
+        }
+
+        function renderRisks() {
+            const risksList = document.getElementById('risks-list');
+            risksList.innerHTML = '';
+
+            projectData.risks.forEach(risk => {
+                const riskDiv = document.createElement('div');
+                riskDiv.className = 'risk-item';
+                
+                riskDiv.innerHTML = `
+                    <div class="risk-name">${risk.name}</div>
+                    <div class="risk-meta">
+                        Impact: ${risk.impact} • Probability: ${risk.probability}
+                        <br>Mitigation: ${risk.mitigation}
+                    </div>
+                `;
+                
+                risksList.appendChild(riskDiv);
+            });
+        }
+
+        function renderSprint() {
+            const sprintTasks = document.getElementById('sprint-tasks');
+            const sprint = projectData.current_sprint;
+            
+            document.getElementById('sprint-capacity').textContent = sprint.capacity_hours + ' hours';
+            document.getElementById('sprint-committed').textContent = sprint.committed_hours + ' hours';
+            
+            sprintTasks.innerHTML = '';
+            
+            const inProgressTasks = projectData.tasks.filter(t => sprint.in_progress.includes(t.id));
+            const highPriorityTasks = projectData.tasks.filter(t => sprint.high_priority.includes(t.id));
+            
+            // In Progress Section
+            if (inProgressTasks.length > 0) {
+                const section = document.createElement('div');
+                section.innerHTML = '<h4 style="padding: 1rem; background: #f8fafc; margin: 0;">🔄 In Progress</h4>';
+                sprintTasks.appendChild(section);
+                
+                inProgressTasks.forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.className = 'task-item';
+                    taskDiv.innerHTML = `
+                        <div class="task-status status-partial"></div>
+                        <div class="task-info">
+                            <div class="task-id">${task.id}</div>
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-meta">${task.assignee} • ${task.hours_remaining}h remaining</div>
+                        </div>
+                    `;
+                    sprintTasks.appendChild(taskDiv);
+                });
+            }
+            
+            // High Priority Section
+            if (highPriorityTasks.length > 0) {
+                const section = document.createElement('div');
+                section.innerHTML = '<h4 style="padding: 1rem; background: #fef2f2; margin: 0;">🔥 High Priority</h4>';
+                sprintTasks.appendChild(section);
+                
+                highPriorityTasks.forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.className = 'task-item';
+                    taskDiv.innerHTML = `
+                        <div class="task-status status-not-started"></div>
+                        <div class="task-info">
+                            <div class="task-id">${task.id}</div>
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-meta">${task.assignee} • ${task.hours_remaining}h remaining</div>
+                        </div>
+                    `;
+                    sprintTasks.appendChild(taskDiv);
+                });
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Show selected tab
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function filterTasks() {
+            const searchTerm = document.getElementById('task-search').value.toLowerCase();
+            const taskItems = document.querySelectorAll('#tasks-list .task-item');
+            
+            taskItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const matches = text.includes(searchTerm);
+                item.style.display = matches ? 'flex' : 'none';
+            });
+        }
+
+        function filterByStatus(status) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const taskItems = document.querySelectorAll('#tasks-list .task-item');
+            
+            taskItems.forEach(item => {
+                const statusElement = item.querySelector('.task-status');
+                let taskStatus = 'not_started';
+                
+                if (statusElement.classList.contains('status-complete')) taskStatus = 'complete';
+                else if (statusElement.classList.contains('status-partial')) taskStatus = 'partial';
+                
+                const matches = status === 'all' || taskStatus === status;
+                item.style.display = matches ? 'flex' : 'none';
+            });
+        }
+
+        function showAssignModal() {
+            const modal = document.getElementById('assign-modal');
+            const taskSelect = document.getElementById('task-select');
+            const memberSelect = document.getElementById('member-select');
+            
+            // Populate task options
+            taskSelect.innerHTML = '<option value="">Select a task...</option>';
+            projectData.tasks.filter(t => t.assignee === 'TBD').forEach(task => {
+                const option = document.createElement('option');
+                option.value = task.id;
+                option.textContent = `${task.id} - ${task.name}`;
+                taskSelect.appendChild(option);
+            });
+            
+            // Populate member options
+            memberSelect.innerHTML = '<option value="">Select team member...</option>';
+            projectData.team.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.name;
+                option.textContent = `${member.name} (${member.role})`;
+                memberSelect.appendChild(option);
+            });
+            
+            modal.style.display = 'block';
+        }
+
+        function closeAssignModal() {
+            document.getElementById('assign-modal').style.display = 'none';
+        }
+
+        function assignTask() {
+            const taskId = document.getElementById('task-select').value;
+            const memberName = document.getElementById('member-select').value;
+            
+            if (!taskId || !memberName) {
+                alert('Please select both a task and team member');
+                return;
+            }
+            
+            // Update the task in memory (in a real app, this would save to backend)
+            const task = projectData.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.assignee = memberName;
+                renderTasks();
+                renderSprint();
+                alert(`Task ${taskId} assigned to ${memberName}`);
+            }
+            
+            closeAssignModal();
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(projectData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'project-export.json';
+            link.click();
+        }
+
+        function refreshData() {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            loadData();
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
