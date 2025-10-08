@@ -1,0 +1,252 @@
+project:
+  name: 料金比較楽だー＿クローリングリファクタリング
+  description: Hotel price comparison crawler refactoring project
+  start_date: '2025-10-01'
+  total_planned_hours: 253
+  total_actual_hours: 29
+  completion_percentage: 11.5
+status:
+- name: Not Started
+  value: 0
+- name: In Progress
+  value: 1
+- name: Complete
+  value: 2
+phases:
+- id: 1
+  name: 調査
+  status: 1
+  tasks:
+  - id: '1.1'
+    name: 利用予定の技術＋プログラミング言語調査
+    assignee: トゥエン
+    status: 2
+    planned_hours: [2, 3]
+    actual_hours: [2, 3]
+    start_date: '2025-10-01'
+    end_date: '2025-10-02'
+    dependencies: []
+    deliverables:
+    - 利用予定の技術＋プログラミング言語調査 deliverable
+  - id: '1.2'
+    name: trip.com クローリングPOC 問題洗い出し
+    assignee: ドン
+    status: 2
+    planned_hours: [8, 8,0,0, 8, 8]
+    actual_hours: [8, 8, 0, 0, 8, 8]
+    start_date: '2025-10-02'
+    end_date: '2025-10-07'
+    dependencies: []
+    deliverables:
+    - trip.com クローリングPOC 問題洗い出し deliverable
+- id: 2
+  name: Trip.com製造
+  status: 1
+  tasks:
+  - id: '2.1'
+    name: 製造：Trip.com
+    assignee: ドン
+    status: 1
+    planned_hours: [6, 6, 6, 6]
+    actual_hours: []
+    start_date: '2025-10-08'
+    end_date: '2025-10-13'
+    dependencies: []
+    deliverables:
+    - 製造：Trip.com deliverable
+  - id: '2.2'
+    name: 単体テスト：Trip.com (クローリング問題なくできるか、ルームタイプ、値段の差あるか）
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6, 6, 6, 4, 4, 2]
+    actual_hours: []
+    start_date: '2025-10-14'
+    end_date: '2025-10-22'
+    dependencies: []
+    deliverables:
+    - 単体テスト：Trip.com (クローリング問題なくできるか、ルームタイプ、値段の差あるか） deliverable
+- id: 3
+  name: Booking.com製造
+  status: 1
+  tasks:
+  - id: '3.1'
+    name: 製造：Booking.com
+    assignee: ドン
+    status: 0
+    planned_hours: [2, 4, 6, 6, 2]
+    actual_hours: []
+    start_date: '2025-10-21'
+    end_date: '2025-10-27'
+    dependencies: []
+    deliverables:
+    - 製造：Booking.com deliverable
+  - id: '3.2'
+    name: 単体テスト：Booking.com (クローリング問題なくできるか、ルームタイプ、値段の差あるか）
+    assignee: ドン
+    status: 0
+    planned_hours: [4, 6, 6, 4]
+    actual_hours: []
+    start_date: '2025-10-27'
+    end_date: '2025-10-30'
+    dependencies: []
+    deliverables:
+    - 単体テスト：Booking.com (クローリング問題なくできるか、ルームタイプ、値段の差あるか） deliverable
+- id: 4
+  name: Agoda製造
+  status: 1
+  tasks:
+  - id: '4.1'
+    name: 製造：Agoda
+    assignee: ドン
+    status: 0
+    planned_hours: [2, 6, 6, 6]
+    actual_hours: []
+    start_date: '2025-10-30'
+    end_date: '2025-11-04'
+    dependencies: []
+    deliverables:
+    - 製造：Agoda deliverable
+  - id: '4.2'
+    name: 単体テスト：Agoda (クローリング問題なくできるか、ルームタイプ、値段の差あるか）
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6, 6, 2]
+    actual_hours: []
+    start_date: '2025-11-05'
+    end_date: '2025-11-10'
+    dependencies: []
+    deliverables:
+    - 単体テスト：Agoda (クローリング問題なくできるか、ルームタイプ、値段の差あるか） deliverable
+- id: 5
+  name: Rakuten製造
+  status: 1
+  tasks:
+  - id: '5.1'
+    name: 製造：Rakuten
+    assignee: ドン
+    status: 0
+    planned_hours: [4, 6]
+    actual_hours: []
+    start_date: '2025-11-10'
+    end_date: '2025-11-11'
+    dependencies: []
+    deliverables:
+    - 製造：Rakuten deliverable
+  - id: '5.2'
+    name: 単体テスト：Rakuten (クローリング問題なくできるか、ルームタイプ、値段の差あるか）
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6]
+    actual_hours: []
+    start_date: '2025-11-12'
+    end_date: '2025-11-13'
+    dependencies: []
+    deliverables:
+    - 単体テスト：Rakuten (クローリング問題なくできるか、ルームタイプ、値段の差あるか） deliverable
+- id: 6
+  name: Jalan製造
+  status: 1
+  tasks:
+  - id: '6.1'
+    name: 製造：Jalan
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6]
+    actual_hours: []
+    start_date: '2025-11-14'
+    end_date: '2025-11-17'
+    dependencies: []
+    deliverables:
+    - 製造：Jalan deliverable
+  - id: '6.2'
+    name: 単体テスト：Jalan (クローリング問題なくできるか、ルームタイプ、値段の差あるか）
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6]
+    actual_hours: []
+    start_date: '2025-11-18'
+    end_date: '2025-11-19'
+    dependencies: []
+    deliverables:
+    - 単体テスト：Jalan (クローリング問題なくできるか、ルームタイプ、値段の差あるか） deliverable
+- id: 7
+  name: テスト
+  status: 1
+  tasks:
+  - id: '7.1'
+    name: 結合テスト
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6]
+    actual_hours: []
+    start_date: '2025-11-20'
+    end_date: '2025-11-21'
+    dependencies: []
+    deliverables:
+    - 結合テスト deliverable
+  - id: '7.2'
+    name: 負荷テスト（スレッド数・ブラウザ数をあげて、最速度でクローリングした場合のサーバーパーフォーマンス測定）
+    assignee: ドン
+    status: 0
+    planned_hours: [6, 6]
+    actual_hours: []
+    start_date: '2025-11-24'
+    end_date: '2025-11-25'
+    dependencies: []
+    deliverables:
+    - 負荷テスト（スレッド数・ブラウザ数をあげて、最速度でクローリングした場合のサーバーパーフォーマンス測定） deliverable
+- id: 8
+  name: リリース
+  status: 1
+  tasks:
+  - id: '8.1'
+    name: リリース作業
+    assignee: ドン
+    status: 0
+    planned_hours: [2]
+    actual_hours: []
+    start_date: '2025-11-26'
+    end_date: '2025-11-26'
+    dependencies: []
+    deliverables:
+    - リリース作業 deliverable
+  - id: '8.2'
+    name: リリース後確認・監視
+    assignee: ドン・トゥエン
+    status: 0
+    planned_hours: [2, 2, 2]
+    actual_hours: []
+    start_date: '2025-11-26'
+    end_date: '2025-11-28'
+    dependencies: []
+    deliverables:
+    - リリース後確認・監視 deliverable
+team:
+- name: トゥエン
+  role: Senior Developer
+  active_tasks: []
+  completed_tasks: []
+  total_hours: 0
+  availability: available
+- name: ドン
+  role: Lead Developer
+  active_tasks: []
+  completed_tasks: []
+  total_hours: 0
+  availability: available
+risks:
+- name: Technical complexity
+  impact: high
+  probability: medium
+  mitigation: Thorough testing and POC
+  owner: ドン
+- name: Timeline pressure
+  impact: medium
+  probability: high
+  mitigation: Prioritize core features
+  owner: トゥエン
+time_logs: []
+next_week_priorities:
+- Complete Trip.com implementation
+- Start Booking.com development
+- Conduct thorough testing

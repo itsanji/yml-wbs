@@ -11,6 +11,9 @@ import os
 from urllib.parse import urlparse, parse_qs
 import datetime
 
+# Get task file name from environment variable or use default
+TASK_FILE = os.environ.get('TASK_FILE', 'tasks.yaml')
+
 class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         # Enable CORS for all requests
@@ -48,35 +51,64 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, "API endpoint not found")
 
     def serve_tasks_api(self):
-        """Serve tasks data as JSON API"""
+        """Serve tasks data as JSON API (converted from YAML)"""
         try:
-            with open('tasks.json', 'r') as f:
-                data = json.load(f)
+            import yaml
+            with open(TASK_FILE, 'r') as f:
+                data = yaml.safe_load(f)
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(data).encode())
         except FileNotFoundError:
-            self.send_error(404, "tasks.json not found")
-        except json.JSONDecodeError:
-            self.send_error(500, "Invalid JSON in tasks.json")
+            self.send_error(404, f"{TASK_FILE} not found")
+        except Exception as e:
+            self.send_error(500, f"Error parsing YAML: {str(e)}")
 
     def serve_stats_api(self):
         """Serve project statistics"""
         try:
-            with open('tasks.json', 'r') as f:
-                data = json.load(f)
+            import yaml
+            with open(TASK_FILE, 'r') as f:
+                data = yaml.safe_load(f)
             
-            # Calculate stats
-            tasks = data.get('tasks', [])
+            # Get status mapping
+            status_map = {}
+            if 'status' in data:
+                for status_item in data['status']:
+                    status_map[status_item['value']] = status_item['name']
+            
+            # Calculate stats from phases structure
+            tasks = []
+            if 'phases' in data:
+                for phase in data['phases']:
+                    if 'tasks' in phase:
+                        tasks.extend(phase['tasks'])
+            
             total_tasks = len(tasks)
-            completed_tasks = len([t for t in tasks if t['status'] == 'complete'])
-            in_progress_tasks = len([t for t in tasks if t['status'] == 'partial'])
-            not_started_tasks = len([t for t in tasks if t['status'] == 'not_started'])
+            completed_tasks = len([t for t in tasks if t.get('status') == 2])
+            in_progress_tasks = len([t for t in tasks if t.get('status') == 1])
+            not_started_tasks = len([t for t in tasks if t.get('status') == 0])
             
-            total_planned_hours = sum(t['planned_hours'] for t in tasks)
-            total_actual_hours = sum(t['actual_hours'] for t in tasks)
+            # Calculate hours from arrays
+            total_planned_hours = 0
+            total_actual_hours = 0
+            for task in tasks:
+                # Sum planned hours from array
+                planned_hours = task.get('planned_hours', 0)
+                if isinstance(planned_hours, list):
+                    total_planned_hours += sum(planned_hours)
+                elif planned_hours is not None:
+                    total_planned_hours += planned_hours
+                
+                # Sum actual hours from array
+                actual_hours = task.get('actual_hours', 0)
+                if isinstance(actual_hours, list):
+                    total_actual_hours += sum(actual_hours)
+                elif actual_hours is not None:
+                    total_actual_hours += actual_hours
+            
             completion_percentage = (total_actual_hours / total_planned_hours * 100) if total_planned_hours > 0 else 0
             
             stats = {
@@ -100,15 +132,22 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
     def serve_team_api(self):
         """Serve team data with current assignments"""
         try:
-            with open('tasks.json', 'r') as f:
-                data = json.load(f)
+            import yaml
+            with open(TASK_FILE, 'r') as f:
+                data = yaml.safe_load(f)
             
             team = data.get('team', [])
-            tasks = data.get('tasks', [])
+            
+            # Flatten tasks from phases
+            tasks = []
+            if 'phases' in data:
+                for phase in data['phases']:
+                    if 'tasks' in phase:
+                        tasks.extend(phase['tasks'])
             
             # Add current assignments to team members
             for member in team:
-                member_tasks = [t for t in tasks if t['assignee'] == member['name'] and t['status'] != 'complete']
+                member_tasks = [t for t in tasks if t.get('assignee') == member['name'] and t.get('status') != 2]
                 member['active_tasks'] = len(member_tasks)
                 member['active_task_names'] = [t['name'] for t in member_tasks[:3]]  # Show first 3
             
@@ -134,24 +173,30 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 return
             
             # Load current data
-            with open('tasks.json', 'r') as f:
-                data = json.load(f)
+            import yaml
+            with open(TASK_FILE, 'r') as f:
+                data = yaml.safe_load(f)
             
-            # Find and update task
+            # Find and update task in phases
             task_found = False
-            for task in data['tasks']:
-                if task['id'] == task_id:
-                    task['assignee'] = assignee
-                    task_found = True
-                    break
+            if 'phases' in data:
+                for phase in data['phases']:
+                    if 'tasks' in phase:
+                        for task in phase['tasks']:
+                            if task.get('id') == task_id:
+                                task['assignee'] = assignee
+                                task_found = True
+                                break
+                    if task_found:
+                        break
             
             if not task_found:
                 self.send_error(404, "Task not found")
                 return
             
             # Save updated data
-            with open('tasks.json', 'w') as f:
-                json.dump(data, f, indent=2)
+            with open(TASK_FILE, 'w') as f:
+                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -176,32 +221,40 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 return
             
             # Load current data
-            with open('tasks.json', 'r') as f:
-                data = json.load(f)
+            import yaml
+            with open(TASK_FILE, 'r') as f:
+                data = yaml.safe_load(f)
             
-            # Find and update task
+            # Find and update task in phases
             task_found = False
-            for task in data['tasks']:
-                if task['id'] == task_id:
-                    # Update allowed fields
-                    allowed_fields = ['status', 'actual_hours', 'assignee', 'notes']
-                    for field in allowed_fields:
-                        if field in updates:
-                            task[field] = updates[field]
-                    
-                    # Recalculate hours_remaining
-                    task['hours_remaining'] = max(0, task['planned_hours'] - task['actual_hours'])
-                    
-                    task_found = True
-                    break
+            if 'phases' in data:
+                for phase in data['phases']:
+                    if 'tasks' in phase:
+                        for task in phase['tasks']:
+                            if task.get('id') == task_id:
+                                # Update allowed fields
+                                allowed_fields = ['status', 'actual_hours', 'assignee', 'notes']
+                                for field in allowed_fields:
+                                    if field in updates:
+                                        task[field] = updates[field]
+                                
+                                # Recalculate hours_remaining for array-based hours
+                                planned_total = sum(task.get('planned_hours', [])) if isinstance(task.get('planned_hours'), list) else task.get('planned_hours', 0)
+                                actual_total = sum(task.get('actual_hours', [])) if isinstance(task.get('actual_hours'), list) else task.get('actual_hours', 0)
+                                task['hours_remaining'] = max(0, planned_total - actual_total)
+                                
+                                task_found = True
+                                break
+                    if task_found:
+                        break
             
             if not task_found:
                 self.send_error(404, "Task not found")
                 return
             
             # Save updated data
-            with open('tasks.json', 'w') as f:
-                json.dump(data, f, indent=2)
+            with open(TASK_FILE, 'w') as f:
+                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -227,7 +280,7 @@ def main():
     print(f"📁 Serving files from: {script_dir}")
     print(f"🌐 Dashboard URL: http://localhost:{PORT}/dashboard.html")
     print(f"📊 API Base URL: http://localhost:{PORT}/api/")
-    print(f"📋 Tasks JSON: http://localhost:{PORT}/tasks.json")
+    print(f"📋 Tasks YAML: http://localhost:{PORT}/{TASK_FILE}")
     print(f"\n💡 Available API endpoints:")
     print(f"   GET  /api/tasks  - Get all tasks")
     print(f"   GET  /api/stats  - Get project statistics")

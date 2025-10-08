@@ -3,8 +3,26 @@
 # WBS Dashboard Startup Script
 # This script starts the dashboard server and opens it in your browser
 
+# Configuration - Task file name (can be overridden)
+TASK_FILE="new_tasks.yaml"
+
 echo "🕷️ Trip.com Crawler - WBS Dashboard"
 echo "=================================="
+echo "📋 Using task file: $TASK_FILE"
+echo ""
+
+# Show usage if help is requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    echo "Usage: $0 [task_file.yaml]"
+    echo ""
+    echo "Examples:"
+    echo "  $0                    # Use default tasks.yaml"
+    echo "  $0 new_tasks.yaml    # Use new_tasks.yaml"
+    echo "  TASK_FILE=my.yaml $0 # Use environment variable"
+    echo ""
+    echo "The script will start the dashboard server and open it in your browser."
+    exit 0
+fi
 
 # Check if Python is available
 if ! command -v python3 &> /dev/null; then
@@ -13,10 +31,37 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-# Check if tasks.json exists
-if [ ! -f "tasks.json" ]; then
-    echo "❌ tasks.json not found in current directory."
-    echo "Please make sure you're running this script from the wbs folder."
+# Check if virtual environment exists, create if needed
+if [ ! -d "venv" ]; then
+    echo "📦 Creating virtual environment..."
+    python3 -m venv venv
+    if [ $? -ne 0 ]; then
+        echo "❌ Failed to create virtual environment"
+        exit 1
+    fi
+fi
+
+# Activate virtual environment
+echo "🔧 Activating virtual environment..."
+source venv/bin/activate
+
+# Check if PyYAML is available, install if needed
+if ! python3 -c "import yaml" &> /dev/null; then
+    echo "📦 Installing PyYAML..."
+    python3 -m pip install PyYAML
+    if [ $? -ne 0 ]; then
+        echo "❌ Failed to install PyYAML"
+        exit 1
+    fi
+    echo "✅ PyYAML installed successfully"
+fi
+
+# Check if the specified task file exists
+if [ ! -f "$TASK_FILE" ]; then
+    echo "❌ $TASK_FILE not found in current directory."
+    echo "Please make sure the task file exists or specify a different one."
+    echo "Usage: $0 [task_file.yaml]"
+    echo "   or: TASK_FILE=my_tasks.yaml $0"
     exit 1
 fi
 
@@ -27,8 +72,9 @@ echo "🚀 Starting dashboard server..."
 echo "📁 Current directory: $(pwd)"
 echo ""
 
-# Start the server in background
-python3 server.py &
+# Start the server in background (using virtual environment)
+export TASK_FILE="$TASK_FILE"
+source venv/bin/activate && python3 server.py &
 SERVER_PID=$!
 
 # Wait a moment for server to start
@@ -40,7 +86,7 @@ if ps -p $SERVER_PID > /dev/null; then
     echo ""
     echo "🌐 Dashboard URLs:"
     echo "   Main Dashboard: http://localhost:8000/dashboard.html"
-    echo "   Tasks JSON:     http://localhost:8000/tasks.json"
+    echo "   Tasks YAML:     http://localhost:8000/$TASK_FILE"
     echo "   API Endpoints:  http://localhost:8000/api/"
     echo ""
     

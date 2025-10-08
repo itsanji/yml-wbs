@@ -9,237 +9,148 @@ project:
     total_actual_hours: 192
     completion_percentage: 74
 
+status: 
+  - name: "Not Started"
+    value: 0
+  - name: "In Progress"
+    value: 1
+  - name: "Complete"
+    value: 2
+
 phases:
     - id: 1
       name: "Project Planning & Analysis"
-      status: "complete"
-      planned_hours: 32
-      actual_hours: 32
+      status: 0
       tasks:
           - id: "1.1.1"
             name: "Define target data extraction requirements"
-            assignee: "TBD"
-            status: "complete"
-            planned_hours: 4
-            actual_hours: 4
+            assignee: "TuyenBV"
+            status: 2
+            planned_hours: [4, 4, 4]
+            actual_hours: [2, 2, 4]
             start_date: "2025-09-01"
-            end_date: "2025-09-01"
+            end_date: "2025-09-03"
             dependencies: []
             deliverables: ["Data extraction spec"]
 
-          - id: "1.1.2"
-            name: "Analyze Trip.com website structure"
-            assignee: "TBD"
-            status: "complete"
-            planned_hours: 4
-            actual_hours: 4
-            start_date: "2025-09-01"
-            end_date: "2025-09-01"
+          - id: "1.2.1"
+            name: "Create this WBS"
+            assignee: "TuyenBV"
+            status: 1
+            planned_hours: [8, 8]
+            actual_hours: [10]
+            start_date: "2025-09-03"
+            end_date: "2025-09-04"
             dependencies: ["1.1.1"]
-            deliverables: ["Site analysis report"]
+            deliverables: ["Data extraction spec"]
+
 
     - id: 2
-      name: "Core Crawler Development"
-      status: "complete"
-      planned_hours: 54
-      actual_hours: 54
+      name: "Gantt Chart Functionality"
+      status: 0
       tasks:
           - id: "2.1.1"
-            name: "Implement base TripComCrawler class"
-            assignee: "TBD"
-            status: "complete"
-            planned_hours: 8
-            actual_hours: 8
+            name: "Write Gantt Chart Requirements"
+            assignee: "TuyenBV"
+            status: 1
+            planned_hours: [8, 8]
+            actual_hours: [10]
             start_date: "2025-09-04"
             end_date: "2025-09-05"
-            dependencies: ["1.3.4"]
-            deliverables: ["crawler.ts"]
+            dependencies: ["1.2.1"]
+            deliverables: ["Gantt Chart Requirements"]
 
-          - id: "2.3.3"
-            name: "Create logging and monitoring system"
-            assignee: "TBD"
-            status: "partial"
-            planned_hours: 5
-            actual_hours: 3
+          - id: "2.2.1"
+            name: "Create Gantt Chart"
+            assignee: "CuongTq"
+            status: 0
+            planned_hours: [8, 8, 8, 8, 8, 8, 8]
+            actual_hours: []
             start_date: "2025-09-12"
-            end_date: "2025-09-13"
-            dependencies: ["2.3.2"]
-            deliverables: ["Logging system"]
-            notes: "Console logging exists, needs structured logging"
+            end_date: "2025-09-17"
+            dependencies: ["2.1.1"]
+            deliverables: ["Gantt Chart"]
+            notes: "Gantt Chart exists, needs structured logging"
 
     - id: 3
-      name: "Stealth & Anti-Detection Features"
-      status: "near_complete"
-      planned_hours: 61
-      actual_hours: 58
-      tasks:
-          - id: "3.3.4"
-            name: "Add session persistence and cookie management"
-            assignee: "TBD"
-            status: "partial"
-            planned_hours: 6
-            actual_hours: 0
-            start_date: "2025-09-23"
-            end_date: "2025-09-24"
-            dependencies: ["3.3.3"]
-            deliverables: ["Session persistence"]
-            notes: "Basic cookies implemented"
-            priority: "high"
-
-    - id: 4
-      name: "Testing & Validation"
-      status: "in_progress"
-      planned_hours: 58
-      actual_hours: 35
-      tasks:
-          - id: "4.1.1"
-            name: "Test price extraction logic"
-            assignee: "TBD"
-            status: "partial"
-            planned_hours: 8
-            actual_hours: 2
-            start_date: "2025-09-24"
-            end_date: "2025-09-24"
-            dependencies: ["3.3.4"]
-            deliverables: ["Price extraction tests"]
-            priority: "high"
-
-          - id: "4.1.2"
-            name: "Test fallback mechanisms"
-            assignee: "TBD"
-            status: "not_started"
-            planned_hours: 6
-            actual_hours: 0
-            start_date: "2025-09-24"
-            end_date: "2025-09-25"
-            dependencies: ["4.1.1"]
-            deliverables: ["Fallback tests"]
-            priority: "high"
-            notes: "Framework needed"
-
-          - id: "4.3.4"
-            name: "Test concurrent execution capabilities"
-            assignee: "TBD"
-            status: "not_started"
-            planned_hours: 8
-            actual_hours: 0
-            start_date: "2025-10-01"
-            end_date: "2025-10-02"
-            dependencies: ["4.3.3"]
-            deliverables: ["Concurrency tests"]
-            priority: "medium"
-            notes: "Performance critical"
-
-    - id: 5
-      name: "Configuration & Deployment"
-      status: "near_complete"
+      name: "Deployment"
+      status: 1
       planned_hours: 30
       actual_hours: 25
       tasks:
-          - id: "5.3.1"
+          - id: "3.1.1"
             name: "Create Docker containerization"
-            assignee: "TBD"
-            status: "not_started"
-            planned_hours: 4
-            actual_hours: 0
+            assignee: "HieuNN"
+            status: 2
+            planned_hours: [4, 4]
+            actual_hours: [2, 2]
             start_date: "2025-10-04"
             end_date: "2025-10-05"
-            dependencies: ["5.2.4"]
+            dependencies: []
             deliverables: ["Dockerfile"]
             priority: "high"
 
-          - id: "5.3.2"
+          - id: "3.2.1"
             name: "Set up CI/CD pipeline"
-            assignee: "TBD"
-            status: "not_started"
-            planned_hours: 3
-            actual_hours: 0
+            assignee: "HieuNN"
+            status: 1
+            planned_hours: [3, 3]
+            actual_hours: [2]
             start_date: "2025-10-05"
             end_date: "2025-10-05"
-            dependencies: ["5.3.1"]
+            dependencies: ["3.1.1"]
             deliverables: ["CI/CD config"]
             priority: "medium"
 
 # Team assignments
 team:
-    - name: "Developer A"
+    - name: "TuyenBV"
       role: "Senior Developer"
       active_tasks: []
       completed_tasks: []
       total_hours: 0
       availability: "available"
 
-    - name: "Developer B"
+    - name: "CuongTq"
       role: "Junior Developer"
       active_tasks: []
       completed_tasks: []
       total_hours: 0
       availability: "available"
 
-    - name: "QA Tester"
+    - name: "HungNV"
       role: "Quality Assurance"
       active_tasks: []
       completed_tasks: []
       total_hours: 0
       availability: "available"
 
-    - name: "DevOps"
+    - name: "HieuNN"
       role: "DevOps Engineer"
       active_tasks: []
       completed_tasks: []
       total_hours: 0
       availability: "available"
 
-# Current sprint (Week of Oct 7-13, 2025)
-current_sprint:
-    start_date: "2025-10-07"
-    end_date: "2025-10-13"
-
-    in_progress:
-        - task_id: "2.3.3"
-          assignee: "TBD"
-          hours_remaining: 2
-
-        - task_id: "3.3.4"
-          assignee: "TBD"
-          hours_remaining: 6
-
-        - task_id: "4.1.2"
-          assignee: "TBD"
-          hours_remaining: 6
-
-        - task_id: "4.3.4"
-          assignee: "TBD"
-          hours_remaining: 8
-
-    high_priority:
-        - task_id: "4.1.1"
-          reason: "Critical for quality"
-          hours_remaining: 6
-
-        - task_id: "5.3.1"
-          reason: "Deployment preparation"
-          hours_remaining: 4
-
 # Risk tracking
 risks:
-    - name: "Trip.com detection"
+    - name: "Gantt Chart not working"
       impact: "high"
       probability: "high"
-      mitigation: "Enhance stealth, use proxies"
-      owner: "TBD"
+      mitigation: "Fix Gantt Chart"
+      owner: "CuongTq"
 
     - name: "Unit testing gaps"
       impact: "medium"
       probability: "medium"
-      mitigation: "Implement Jest framework"
-      owner: "TBD"
+      mitigation: "Fix Gantt Chart"
+      owner: "CuongTq"
 
     - name: "Deployment readiness"
       impact: "low"
       probability: "low"
       mitigation: "Complete Docker/CI setup"
-      owner: "TBD"
+      owner: "HieuNN"
 
 # Time tracking
 time_logs:
